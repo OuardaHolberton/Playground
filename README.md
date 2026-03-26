@@ -26,6 +26,6 @@
 
 <div align="center">
 
-*"Built with curiosity and a lot of CSS tweaking"*
+*OuardaB*
 
 </div>
