@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock — Playground</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0D0D0D;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: system-ui, sans-serif;
+    }
+
+    .card {
+      text-align: center;
+      padding: 48px 40px;
+      border: 1px solid #222;
+      border-radius: 16px;
+      background: #111;
+      min-width: 380px;
+    }
+
+    .city-name {
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 4px;
+      margin-bottom: 6px;
+    }
+
+    .city-sub {
+      font-size: 10px;
+      color: #444;
+      margin-bottom: 28px;
+    }
+
+    .clock {
+      font-size: 64px;
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: 6px;
+      font-family: monospace;
+    }
+
+    .date {
+      font-size: 11px;
+      color: #555;
+      margin-top: 16px;
+      margin-bottom: 28px;
+      letter-spacing: 1px;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #333;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .dot.active { background: #C8A96E; }
+
+    .cities {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .city-btn {
+      font-size: 10px;
+      color: #555;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: color 0.3s;
+    }
+
+    .city-btn.active { color: #C8A96E; }
+    .city-btn:hover { color: #888; }
+
+    .sep { font-size: 10px; color: #333; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <p class="city-name" id="city-label">PARIS</p>
+    <p class="city-sub" id="city-sub">France — UTC+1</p>
+    <div class="clock" id="main-clock">00:00:00</div>
+    <p class="date" id="main-date">...</p>
+
+    <div class="dots">
+      <div class="dot active" data-city="Paris" data-tz="Europe/Paris" data-utc="UTC+1"></div>
+      <div class="dot" data-city="New York" data-tz="America/New_York" data-utc="UTC-5"></div>
+      <div class="dot" data-city="Tokyo" data-tz="Asia/Tokyo" data-utc="UTC+9"></div>
+      <div class="dot" data-city="Londres" data-tz="Europe/London" data-utc="UTC+0"></div>
+      <div class="dot" data-city="Dubaï" data-tz="Asia/Dubai" data-utc="UTC+4"></div>
+    </div>
+
+    <div class="cities">
+      <span class="city-btn active" data-city="Paris" data-tz="Europe/Paris" data-utc="UTC+1">Paris</span>
+      <span class="sep">|</span>
+      <span class="city-btn" data-city="New York" data-tz="America/New_York" data-utc="UTC-5">New York</span>
+      <span class="sep">|</span>
+      <span class="city-btn" data-city="Tokyo" data-tz="Asia/Tokyo" data-utc="UTC+9">Tokyo</span>
+      <span class="sep">|</span>
+      <span class="city-btn" data-city="Londres" data-tz="Europe/London" data-utc="UTC+0">Londres</span>
+      <span class="sep">|</span>
+      <span class="city-btn" data-city="Dubaï" data-tz="Asia/Dubai" data-utc="UTC+4">Dubaï</span>
+    </div>
+  </div>
+
+  <script>
+    const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    const mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+    let currentTz = 'Europe/Paris';
+
+    function pad(n){ return String(n).padStart(2,'0'); }
+
+    function tick(){
+      const now = new Date();
+      const opts = { timeZone: currentTz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+      document.getElementById('main-clock').textContent = new Intl.DateTimeFormat('fr-FR', opts).format(now);
+      const dateOpts = { timeZone: currentTz, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      const d = new Intl.DateTimeFormat('fr-FR', dateOpts).format(now);
+      document.getElementById('main-date').textContent = d.charAt(0).toUpperCase() + d.slice(1);
+    }
+
+    function switchCity(city, tz, utc){
+      currentTz = tz;
+      document.getElementById('city-label').textContent = city.toUpperCase();
+      document.getElementById('city-sub').textContent = city + ' — ' + utc;
+      document.querySelectorAll('.dot, .city-btn').forEach(el => {
+        el.classList.toggle('active', el.dataset.city === city);
+      });
+      tick();
+    }
+
+    document.querySelectorAll('.dot, .city-btn').forEach(el => {
+      el.addEventListener('click', () => switchCity(el.dataset.city, el.dataset.tz, el.dataset.utc));
+    });
+
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
